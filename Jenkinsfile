@@ -9,7 +9,7 @@ pipeline{
     jdk  "jdk11"
    } 
 
-   enviroment{
+   environment{
     SNAP_REPO = 'vprofile-snapshot'
     NEXUS_USER = 'admin'
     NEXUS_PASS = 'admin123'
@@ -22,7 +22,7 @@ pipeline{
     }
 
   stages{
-      stage('Build')
+      stage('Build'){
        steps{ 
          sh 'mvn -s settings.xml -DskipTests install'
        }
@@ -32,7 +32,7 @@ pipeline{
                 archiveArtifacts artifacts: '**/target/*.war'
                 }
             }
-
+      }
   stage("uploadArtifact"){
    steps{
      nexusArtifactUploader(
