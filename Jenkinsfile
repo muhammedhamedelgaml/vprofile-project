@@ -8,7 +8,6 @@ pipeline{
     maven  "maven3"
     jdk  "jdk11"
    } 
-
    environment{
     SNAP_REPO = 'vprofile-snapshot'
     NEXUS_USER = 'admin'
@@ -56,7 +55,6 @@ pipeline{
      )
      
    }
-
  }
   }
   
