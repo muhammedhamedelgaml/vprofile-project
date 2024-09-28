@@ -18,6 +18,9 @@ pipeline{
     NEXUSIP = 'localhost'
     NEXUSPORT =  '8081'
     NEXUS_LOGIN = 'nexuslogin' 
+    registryCredential = 'ecr:region-name:awscreds'   // awscreds is the credentials we added at jenkins 
+    appRegistry=  'url-of-ecr'      // this is ECR registry - go to ecr and copy url  
+    vprofileRegistry ='https://url-of-ecr'// this is url also of ecr but https first (remove the end)
     }
 
   stages{
@@ -56,8 +59,29 @@ pipeline{
      
    }
  }
+  stage('Build App image'){
+    steps{
+       script{                // this is script way
+         dockerImage = docker.build(appRegistry + ":$BUILD_NUMBER" , "./Dockerfiles/app/multistage/")  // dockerImage is variable we will use to push image (docker.build) is the plugin we installed and we pass in it name of image and tag . then path of Dockerfile
+       }
+    }
   }
-  
+
+stage('upload app image'){
+    steps{
+       script{
+          docker.withRegistry(vprofileRegistry, registryCredential)  // to authenticate pass (url , credentials-of-ecr) 
+          dockerImage.push("$BUILD_NUMBER")
+          dockerImage.push("latest")
+       }
+
+
+    }
+
+}
+
+
+  }  
   post {
         always  {
             echo 'slack notification.'
