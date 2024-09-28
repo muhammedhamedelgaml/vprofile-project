@@ -18,9 +18,11 @@ pipeline{
     NEXUSIP = 'localhost'
     NEXUSPORT =  '8081'
     NEXUS_LOGIN = 'nexuslogin' 
-    registryCredential = 'ecr:region-name:awscreds'   // awscreds is the credentials we added at jenkins 
-    appRegistry=  'url-of-ecr'      // this is ECR registry - go to ecr and copy url  
-    vprofileRegistry ='https://url-of-ecr'// this is url also of ecr but https first (remove the end)
+    registryCredential = 'ecr:region-name:awscreds'   
+    appRegistry=  'url-of-ecr'      
+    vprofileRegistry ='https://url-of-ecr'
+    cluster= "vproappstage" 
+    service= "vproappstagesvc"
     }
 
   stages{
@@ -79,7 +81,12 @@ stage('upload app image'){
     }
 
 }
-
+stage('deploy to ecs'){
+    steps{
+       withAWS(credentials: 'awscreds' , region: 'us-east-1'){
+        sh' aws ecs update-service  --cluster ${cluster} --service ${service} --force-new-deployment '
+    }
+}
 
   }  
   post {
