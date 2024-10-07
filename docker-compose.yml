@@ -1,0 +1,87 @@
+version: '3.4'
+services:
+  vprocache01:
+    image: memcached      
+    ports:
+      - "11211:11211"
+
+  vpromq01:
+    image:  rabbitmq
+    ports:
+     - "15672:15672"      
+
+  vproapp:
+    build: 
+       context: ./Docker-files/app/
+    container_name: vproapp
+    ports:
+     - "8080:8080" 
+    volumes:
+      - vproappdata:/usr/local/tomcat/webapps
+
+  vproweb:
+    image: nginx
+    container_name: vproweb
+    volumes:
+      - ./Docker-files/web/nginvproapp.conf:/etc/nginx/conf.d/vprofile.conf:ro 
+    ports:
+      - "80:80"  
+    restart: always  # Ensure the container restarts automatically
+  
+
+  # vproweb:
+  #   build:
+  #     context: ./Docker-files/web
+  #   ports:
+  #      - "80:80"
+  #   container_name: vproweb 
+
+
+  vprodb:
+    image: mysql:5.7
+    container_name: vprodb
+    ports:
+      - "3306:3306"
+    environment:
+       -  MYSQL_ROOT_PASSWORD="vprodbpass"
+          MYSQL_DATABASE="accounts"
+    volumes:
+      - vprodbdata:/var/lib/mysql
+      - ./Docker-files/db/db_backup.sql:/docker-entrypoint-initdb.d/  # Mount schema directory
+
+    # vprodb: 
+  #   build:
+  #     context: ./Docker-files/db
+  #   container_name: vprodb
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #    - vprodbdata:/var/lib/mysql    
+
+
+volumes:
+  vprodbdata: {}
+  vproappdata: {} 
+
+
+
+# to build
+# docker compose build 
+# you will see images 
+# docker images  OR docker compose ps 
+#################
+# to start containers 
+# docker compose up -d >> if you didn't build images this command will build images then run continers 
+##### 
+# to see containers 
+# docker ps 
+################
+# now go to localhost  
+###############
+# to stop container > docker compose stop
+#      delete       >                 rm
+# to stop and rm    >                down
+####################### 
+# docker system prune -a > it going to remove 
+#1-all stopped containers 2- all network not used by at least ome container 3- all images without  at least one container associated to them 4-all buid cache 
+#############################################
