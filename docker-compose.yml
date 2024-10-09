@@ -46,20 +46,20 @@ services:
        -  MYSQL_ROOT_PASSWORD="vprodbpass"
           MYSQL_DATABASE="accounts"
     volumes:
+      - ./Docker-files/db/db_backup.sql:/docker-entrypoint-initdb.d/db_backup.sql # Mount the SQL file
       - vprodbdata:/var/lib/mysql
-      - ./Docker-files/db/db_backup.sql:/docker-entrypoint-initdb.d/  # Mount schema directory
-
+    
     # vprodb: 
-  #   build:
-  #     context: ./Docker-files/db
-  #   container_name: vprodb
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #    - vprodbdata:/var/lib/mysql    
+    #   build:
+    #     context: ./Docker-files/db
+    #   container_name: vprodb
+    #   ports:
+    #     - "3306:3306"
+    #   volumes:
+    #   - vprodbdata:/var/lib/mysql    
 
 
-volumes:
+volumes:  
   vprodbdata: {}
   vproappdata: {} 
 
